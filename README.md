@@ -4,6 +4,10 @@
 
 Overlay for Closed Captions for Streams는 [Closed Captions for Streams](https://www.twitch.tv/ext/xxwoffr2lnpxrgpq228mawvdgxetip)의 자막을 방송 송출 프로그램(OBS, Xsplit 등)에 표시하기 위한 애드온입니다.
 
+이 애드온을 사용하면 마이크를 통해 말한 내용을 방송 화면에 실시간으로 자막처럼 표시할 수 있습니다.
+
+[데모 동영상](https://youtu.be/CAIVO6aMgs4)
+
 ## 사용방법
 
 ### 1. [Closed Captions for Streams](https://www.twitch.tv/ext/xxwoffr2lnpxrgpq228mawvdgxetip) 설정
