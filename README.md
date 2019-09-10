@@ -10,6 +10,10 @@ Overlay for Closed Captions for Streams는 [Closed Captions for Streams](https:/
 
 ## 사용방법
 
+사용방법에 대한 동영상 안내를 선호하시는 분들은 아래 링크를 참조해주세요.
+
+[사용 방법 동영상 안내](https://youtu.be/XVN0jyW6wh4)
+
 ### 1. [Closed Captions for Streams](https://www.twitch.tv/ext/xxwoffr2lnpxrgpq228mawvdgxetip) 설정
 
 Overlay for Closed Captions for Streams는 Closed Captions for Streams의 음성 인식 데이터를 사용하여 동작합니다.
