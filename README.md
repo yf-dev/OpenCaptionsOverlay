@@ -2,7 +2,7 @@
 
 ![Sample](./sample.gif)
 
-Overlay for Closed Captions for Streams는 [Closed Captions for Streams](https://www.twitch.tv/ext/xxwoffr2lnpxrgpq228mawvdgxetip)의 자막을 방송 송출 프로그램(OBS, Xsplit 등)에 표시하기 위한 애드온입니다.
+Overlay for Closed Captions for Streams는 [Closed Captions for Streams](https://www.twitch.tv/ext/xxwoffr2lnpxrgpq228mawvdgxetip)의 자막을 방송 송출 프로그램(OBS, XSplit 등)에 표시하기 위한 애드온입니다.
 
 이 애드온을 사용하면 마이크를 통해 말한 내용을 방송 화면에 실시간으로 자막처럼 표시할 수 있습니다.
 
@@ -33,14 +33,24 @@ Overlay for Closed Captions for Streams는 Closed Captions for Streams의 음성
 ### 2. Overlay for Closed Captions for Streams 설정
 
 1. [다운로드 페이지](https://github.com/yf-dev/ClosedCaptionsOverlay/releases/latest)에서 `Source code (zip)` 파일을 다운로드하고 압축을 해제합니다.
-2. "최신 버전 크롬"으로 압축 해제한 자막 오버레이 파일(caption.html)을 엽니다.
-3. 크롬에서 연 자막 오버레이 파일 주소의 끝에 "?channel=트위치채널명" 을 덧붙여서 새로고침을 합니다. (예시: `file:///C:/data/ClosedCaptionsOverlay-1.0/caption.html?channel=sleeping_ce`)
+2. "최신 버전 크롬"으로 압축 해제한 자막 오버레이 파일(`caption.html`)을 엽니다.
+3. 크롬에서 연 자막 오버레이 파일 주소의 끝에 `?channel=트위치채널명` 을 덧붙여서 새로고침을 합니다. (예시: `file:///C:/data/ClosedCaptionsOverlay-1.0/caption.html?channel=sleeping_ce`)
 4. 크롬에서 정상적으로 마이크에 말한 내용이 출력되는 것을 확인합니다.
 
-### 3. 설정 마무리
+### 3. 방송 송출 프로그램 설정
 
-1. Overlay for Closed Captions for Streams 설정 3단계에서 확인한 주소(예시: `file:///C:/data/ClosedCaptionsOverlay-1.0/caption.html?channel=sleeping_ce`)를 방송 송출 프로그램에 브라우저 소스로 등록합니다.
-2. 권장하는 브라우저 소스 너비와 높이는 840px, 210px입니다.
+#### 3.1. OBS Studio
+
+1. Overlay for Closed Captions for Streams 설정 3단계에서 확인한 주소(예시: `file:///C:/data/ClosedCaptionsOverlay-1.0/caption.html?channel=sleeping_ce`)를 OBS에 "브라우저" 소스의 URL로 등록합니다.
+2. 캔버스 크기 1280x720에서 권장하는 브라우저 소스 너비와 높이는 840, 210입니다.
+
+#### 3.1. XSplit Broadcaster
+
+1. 웹 페이지 소스 추가 창에서 `Browese...` 버튼을 클릭하고, 압축 해제한 자막 오버레이 파일(`caption.html`)을 선택합니다.
+2. 추가된 소스를 오른쪽 클릭하고, `HTML 소스` 항목의 주소 끝에 `?channel=트위치채널명` 을 덧붙이고 `적용` 버튼을 클릭합니다.
+2. 캔버스 크기 1280x720에서 권장하는 브라우저 소스 너비와 높이는 840, 210입니다.
+
+### 4. 설정 마무리
 
 해당 설정을 완료한 후, 실제 방송에서 자막을 사용하시고자 할 때에는 [음성 인식 사이트](https://cc.go.alejo47.com/recorder)에 접속하셔서 Start 버튼을 클릭하시면 됩니다.
 
