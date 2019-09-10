@@ -56,6 +56,8 @@ Overlay for Closed Captions for Streams는 Closed Captions for Streams의 음성
 
 만약 사용을 종료하시려면 음성 인식 사이트의 Stop 버튼을 클릭하거나 창을 종료합니다.
 
+트위치에서 자막을 지원하는 방송을 진행하신다면, 방송 태그에 [자막(Closed captions)](https://www.twitch.tv/directory/all/tags/8a01ea18-df97-4046-9cff-a9a822bb96e5)을 추가하시는 것도 추천드립니다.
+
 ## 커스터마이징
 
 ### 1. 오버레이에 표시되는 프로필 이미지 변경
