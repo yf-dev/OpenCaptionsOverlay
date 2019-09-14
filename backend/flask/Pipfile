@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Flask = "==1.1.1"
+Flask-Migrate = "==2.5.2"
+Flask-SQLAlchemy = "==2.4.0"
+Flask-Script = "==2.0.6"
+Flask-SocketIO = "==4.2.1"
+Flask-Login = "==0.4.1"
+psycopg2 = "==2.8.3"
+eventlet = "==0.25.1"
+gunicorn = "==19.9.0"
+blinker = "==1.4"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
+
+[packages.flask-dance]
+extras = [ "sqla",]
+version = "==2.2.0"

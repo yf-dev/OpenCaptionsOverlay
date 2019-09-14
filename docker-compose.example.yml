@@ -1,0 +1,22 @@
+version: '3'
+services:
+  db:
+    image: postgres:9.6
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    env_file:
+      - ./settings.env
+    environment:
+      - "LC_COLLATE=C"
+
+  backend:
+    build: ./backend
+    links:
+      - db
+    volumes:
+      - ./backend/flask:/var/www/flask
+      - ./frontend:/frontend
+    restart: unless-stopped
+    env_file:
+      - ./settings.env

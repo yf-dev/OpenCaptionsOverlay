@@ -1,28 +1,14 @@
-<!--
-    사용법
-
-    음성 인식 사이트: https://cc.go.alejo47.com/recorder
-
-    1. 위 음성 인식 사이트에 "최신 버전 크롬"으로 접속합니다.
-    2. 음성 인식 사이트에 방송하고자 하는 트위치 계정으로 로그인합니다.
-    3. 음성 인식 사이트의 Language 항목을 사용하는 언어(한국어)로 변경합니다.
-    4. 음성 인식 사이트의 Start 버튼을 클릭하고 마이크 사용 권한을 허용합니다.
-    5. 음성 인식 사이트에서 마이크에 말한 내용을 인식한 내용이 출력되는 것을 확인합니다.
-    6. 자막을 사용하는 동안 음성 인식 사이트는 계속 Start 상태로 켜 두어야 합니다. (사용을 종료하려면 Stop 버튼을 클릭하거나 창을 닫습니다.)
-    7. 크롬 새 탭에서 자막 오버레이 파일(caption.html)을 엽니다.
-    8. 크롬에서 연 자막 오버레이 파일 주소의 끝에 "?channel=트위치채널명" 을 덧붙여줍니다 (예시: file:///C:/data/caption.html?channel=sleeping_ce)
-    9. 자막 오버레이에서 정상적으로 마이크에 말한 내용이 출력되는 것을 확인합니다.
-    10. 정상 동작을 확인한 자막 오버레이 파일 주소를 방송 송출 프로그램(OBS, Xsplit 등)에서 브라우저 소스로 등록합니다.
-    11. 이제 자막 기능을 사용하시려면 음성 인식 사이트에 접속하셔서 Start 버튼만 클릭하시면 됩니다.
-
-    Author: Sleeping C. elegans <sleeping.c.elegans@gmail.com>
--->
 <!DOCTYPE html>
 
 <head>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Jua:400">
     <style>
         @import url('https://fonts.googleapis.com/css?family=Jua:400');
+
+        :root {
+            --accent-color: #95BBDF;
+            --profile-url: url("{{ url_for('static', filename='profile.png') }}");
+        }
 
         body {
             overflow: hidden;
@@ -58,7 +44,7 @@
 
         .cc-content {
             background: rgba(255, 255, 255, 0.7);
-            border: 0.12em solid #95BBDF;
+            border: 0.12em solid var(--accent-color);
             border-radius: 1.3em;
             padding: 0.5em 0.8em;
             max-height: 4.1em;
@@ -91,6 +77,8 @@
         .text p {
             margin: 0;
             color: #000000;
+            word-break: keep-all;
+            word-wrap: break-word;
         }
 
         #interim {
@@ -100,19 +88,28 @@
         .profile {
             position: absolute;
             margin-left: -4em;
-            bottom: 0;
+            bottom: 0.4em;
         }
 
-        .profile img {
+        .profile .profile-bg {
             height: 2.3em;
             width: 2.3em;
             border-radius: 2.3em;
-            object-fit: cover;
-            object-position: center;
-            border: 0.12em solid #95BBDF;
-            background: #95BBDF;
+            background-color: var(--accent-color);
+            border: 0.12em solid var(--accent-color);
+            overflow: hidden;
+        }
+
+        .profile .profile-img {
+            height: 100%;
+            width: 100%;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-image: var(--profile-url);
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 </head>
 
 <body>
@@ -121,7 +118,9 @@
             <div class="cc-container">
                 <div class="cc-content">
                     <div class="profile">
-                        <img src="./profile.png">
+                        <div class="profile-bg">
+                            <div class="profile-img"></div>
+                        </div>
                     </div>
                     <div class="text-transition-wrapper">
                         <div class="text-transition">
@@ -138,14 +137,15 @@
         </div>
     </div>
     <script>
-        const CLIENT_ID = "jzkbprff40iqj646a697cyrvl0zt2m6"; // twitch player id
-        const TEST_TIMEOUT_DURATION = 4 * 1000;
+        const TEXT_TIMEOUT_DURATION = 4 * 1000;
 
         const FINAL_STR_DOM = document.getElementById('finalStr');
         const INTERIM_DOM = document.getElementById('interim');
         const CC_CONTAINER_DOM = document.getElementsByClassName('cc-container')[0];
         const TEXT_TRANSITION_DOM = document.getElementsByClassName('text-transition')[0];
         const TEXT_TRANSITION_WRAPPER_DOM = document.getElementsByClassName('text-transition-wrapper')[0];
+
+        var socket = null;
 
         var last_final_str = "";
         var last_interim = "";
@@ -178,53 +178,24 @@
             else el.style.width = val + "px";
         }
 
-        function requestChannelInfo(callback) {
+        function listenSocket() {
             const url_params = new URLSearchParams(window.location.search);
-            const channel_name = url_params.get('channel');
+            const channel_id = url_params.get('channel');
 
-            if (channel_name === null) {
+            if (channel_id === null) {
                 updateCaption("⚠️ 채널 정보를 받아올 수 없습니다 ⚠️", "");
                 return;
             }
 
-            try {
-                fetch("https://api.twitch.tv/kraken/channels/" + channel_name, {
-                    headers: {
-                        "client-id": CLIENT_ID
-                    },
-                })
-                    .then(data => data.json())
-                    .then(function (data) {
-                        callback(data._id.toString())
-                    }).catch(function (error) {
-                        updateCaption("⚠️ 채널 정보를 받아올 수 없습니다 ⚠️", "");
-                    });
-            } catch (error) {
-                updateCaption("⚠️ 채널 정보를 받아올 수 없습니다 ⚠️", "");
-            }
-        }
-
-        function listenSocket(channel_id) {
-            const socket = new WebSocket("wss://cc.go.alejo47.com/ws");
-            socket.onopen = function (e) {
-                socket.send(JSON.stringify({
-                    command: "subscribe",
-                    room: channel_id
-                }));
-            };
-            socket.onmessage = function (e) {
-                if (e.data.lastIndexOf('PING', 0) === 0) {
-                    return; // pass PING
-                }
-                const res = JSON.parse(e.data)
-                if (res.command == "message") {
-                    if (res.params.final) {
-                        updateCaption(last_interim, '');
-                    } else {
-                        updateCaption(last_final_str, res.data);
-                    }
-                }
-            }
+            socket = io("https://cc-overlay.update.sh/overlay/" + channel_id, {
+                transports: ['websocket']
+            });
+            socket.on('reconnect_attempt', function () {
+                socket.io.opts.transports = ['polling', 'websocket'];
+            });
+            socket.on('json', function (data) {
+                updateCaption(data.final_str, data.interim);
+            });
         }
 
 
@@ -261,7 +232,7 @@
 
         function setTextTimeoutTimer() {
             cancelTextTimeoutTimer()
-            text_timeout_timer = setTimeout(doTextTimeout, TEST_TIMEOUT_DURATION);
+            text_timeout_timer = setTimeout(doTextTimeout, TEXT_TIMEOUT_DURATION);
         }
 
         function doTextTimeout() {
@@ -330,7 +301,7 @@
 
         hideFinalStr();
         hideInterim();
-        requestChannelInfo(listenSocket);
+        listenSocket();
         addTransitionEndEventListener(CC_CONTAINER_DOM, function (event) {
             if (!isContainerShowing()) {
                 hideFinalStr();

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<head>
+    <style>
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+</head>
+
+<body>
+    <div class="message">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="root-container">
+        <div class="links">
+            <div>오버레이 주소: <a target="_blank"
+                    href="{{ url_for('overlay', _external=True) }}?channel={{ current_user.oauth|first|attr("provider_user_id") }}">{{ url_for('overlay', _external=True) }}?channel={{ current_user.oauth|first|attr("provider_user_id") }}</a>
+            </div>
+            <div><a href="{{ url_for('logout') }}">로그인 정보 갱신</a></div>
+        </div>
+        <div class="mic-buttons">
+            <button id="micOn">인식 시작</button>
+            <button id="micOff">인식 종료</button>
+        </div>
+        <div class="recognition-result">
+            <span>최근인식결과: </span>
+            <span id="finalStr"></span>
+            <span id="interim"></span>
+        </div>
+    </div>
+    <script>
+        const LANG = 'ko-KR';
+
+        const MIC_ON_DOM = document.getElementById('micOn');
+        const MIC_OFF_DOM = document.getElementById('micOff');
+
+        const FINAL_STR_DOM = document.getElementById('finalStr');
+        const INTERIM_DOM = document.getElementById('interim');
+
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
+        var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+
+        var socket = null;
+        var recognition = null;
+        var is_mic_on = false;
+
+
+        function initRecognition() {
+            recognition = new SpeechRecognition();
+            recognition.lang = LANG;
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.maxAlternatives = 1;
+
+            recognition.onend = function () {
+                if (is_mic_on) {
+                    recognition.start();
+                }
+            }
+
+            recognition.onresult = function (event) {
+                var interim = '';
+                var final_str = '';
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        final_str += ' ' + event.results[i][0].transcript;
+                    } else {
+                        interim += event.results[i][0].transcript;
+                    }
+                }
+
+                updateCaption(final_str, interim)
+            };
+
+            recognition.onerror = function (event) {
+                console.log('Error occurred in recognition: ' + event.error);
+            }
+
+            MIC_ON_DOM.addEventListener('click', function () {
+                is_mic_on = true;
+                recognition.start();
+            });
+
+            MIC_OFF_DOM.addEventListener('click', function () {
+                is_mic_on = false;
+                recognition.stop();
+            });
+        }
+
+
+        function listenSocket() {
+            socket = io("https://cc-overlay.update.sh/recognition", {
+                transports: ['websocket']
+            });
+            socket.on('reconnect_attempt', function () {
+                socket.io.opts.transports = ['polling', 'websocket'];
+            });
+            socket.on('message', function (data) {
+                console.log(data);
+            });
+        }
+
+
+        function updateCaption(final_str, interim) {
+            if (socket === null || socket.disconnected) {
+                return;
+            }
+            socket.send({
+                'final_str': final_str,
+                'interim': interim
+            });
+
+            FINAL_STR_DOM.textContent = final_str;
+            INTERIM_DOM.textContent = interim;
+        }
+
+        listenSocket();
+        initRecognition();
+    </script>
+</body>

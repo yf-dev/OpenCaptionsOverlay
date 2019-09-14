@@ -1,0 +1,13 @@
+.idea/
+.vscode/
+settings.env
+docker-compose.yml
+
+__pycache__
+*.py[co]
+
+backend/log
+backend/flask/.venv
+
+db-data/
+redis-data/
