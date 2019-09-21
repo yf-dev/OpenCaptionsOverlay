@@ -21,7 +21,7 @@
     <div class="root-container">
         <div class="links">
             <div>오버레이 주소: <a target="_blank"
-                    href="{{ url_for('overlay', _external=True) }}?channel={{ current_user.oauth|first|attr("provider_user_id") }}">{{ url_for('overlay', _external=True) }}?channel={{ current_user.oauth|first|attr("provider_user_id") }}</a>
+                    href="{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}">{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}</a>
             </div>
             <div><a href="{{ url_for('logout') }}">로그인 정보 갱신</a></div>
         </div>

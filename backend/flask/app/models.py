@@ -47,6 +47,7 @@ class SerializableMixin(object):
 class User(UserMixin, SerializableMixin, db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
+    twitch_id = db.Column(db.String(120), nullable=False)
 
     def json(self):
         data = self._serialize()

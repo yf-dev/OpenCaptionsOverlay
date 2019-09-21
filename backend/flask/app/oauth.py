@@ -52,9 +52,12 @@ def twitch_logged_in(blueprint, token):
         oauth = OAuth(provider=blueprint.name, provider_user_id=user_id, token=token)
 
     if not oauth.user:
-        user = User()
+        user = User(twitch_id=user_id)
         oauth.user = user
         db.session.add_all([user, oauth])
+        db.session.commit()
+    else:
+        oauth.user.twitch_id = user_id
         db.session.commit()
 
     login_user(oauth.user)

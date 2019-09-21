@@ -13,5 +13,5 @@ def connect_handler():
 
 @socketio.on('message', namespace='/recognition')
 def handle_message(message):
-    if current_user.oauth:
-        send(message, json=True, broadcast=True, namespace=f'/overlay/{current_user.oauth[0].provider_user_id}')
+    if current_user.twitch_id:
+        send(message, json=True, broadcast=True, namespace=f'/overlay/{current_user.twitch_id}')
