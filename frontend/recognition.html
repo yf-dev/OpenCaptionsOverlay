@@ -1,45 +1,133 @@
 <!DOCTYPE html>
 
 <head>
-    <style>
-    </style>
+    <title>Closed Captions Overlay - Recognition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+    <style>
+        html {
+            min-height: 100vh;
+        }
+
+        body {
+            background: #454d5d;
+        }
+
+        .container {
+            max-width: 980px;
+            margin-top: 24px;
+        }
+
+        .toast {
+            margin-top: 8px;
+        }
+
+        .main-card {
+            margin-top: 8px;
+        }
+
+        .link-card {
+            margin-top: 8px;
+        }
+
+        .result-card {
+            margin-top: 8px;
+        }
+
+        .mic-buttons .btn {
+            margin-right: 8px;
+        }
+
+        #micToggle.badge-primary:after {
+            background: #5755d9;
+        }
+
+        #micToggle.badge-success:after {
+            background: #32b643;
+        }
+
+        #micToggle.badge-warning:after {
+            background: #ffb700;
+        }
+
+        #micToggle.badge-error:after {
+            background: #e85600;
+        }
+
+        #micToggle.badge-red:after {
+            background: #cf1300;
+        }
+
+        .recognition-result {
+            height: 100px;
+            background: #f7f8f9;
+            color: inherit;
+            display: block;
+            line-height: 1.5;
+            overflow-x: auto;
+            padding: 1rem;
+            width: 100%;
+            border-radius: 0.1rem;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="message">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <ul class="flash">
-            {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-    </div>
-    <div class="root-container">
-        <div class="links">
-            <div>오버레이 주소: <a target="_blank"
-                    href="{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}">{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}</a>
+    <div class="container">
+        <div class="columns">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="column col-12">
+                {% for category, message in messages %}
+                <div class="toast text-center">
+                    {{ message }}
+                </div>
+                {% endfor %}
             </div>
-            <div><a href="{{ url_for('logout') }}">로그인 정보 갱신</a></div>
-        </div>
-        <div class="mic-buttons">
-            <button id="micOn">인식 시작</button>
-            <button id="micOff">인식 종료</button>
-        </div>
-        <div class="recognition-result">
-            <span>최근인식결과: </span>
-            <span id="finalStr"></span>
-            <span id="interim"></span>
+            {% endif %}
+            {% endwith %}
+            <div class="column col-12">
+                <div class="card link-card">
+                    <div class="card-body">
+                        <div class="links">
+                            <div>오버레이 주소: <a target="_blank"
+                                    href="{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}">{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column col-12">
+                <div class="card main-card">
+                    <div class="card-body">
+                        <div class="mic-buttons">
+                            <button id="micToggle" class="btn btn-success" data-badge="&nbsp;">인식 시작</button>
+                            <a class="btn" href="{{ url_for('logout') }}">로그인 정보 갱신</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column col-12">
+                <div class="card result-card">
+                    <div class="card-header">
+                        <div class="card-title">최근인식결과</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="recognition-result">
+                            <span id="finalStr"></span>
+                            <span id="interim"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script>
         const LANG = 'ko-KR';
 
-        const MIC_ON_DOM = document.getElementById('micOn');
-        const MIC_OFF_DOM = document.getElementById('micOff');
+        const MIC_TOGGLE_DOM = document.getElementById('micToggle');
 
         const FINAL_STR_DOM = document.getElementById('finalStr');
         const INTERIM_DOM = document.getElementById('interim');
@@ -60,10 +148,20 @@
             recognition.interimResults = true;
             recognition.maxAlternatives = 1;
 
-            recognition.onend = function () {
-                if (is_mic_on) {
-                    recognition.start();
-                }
+            recognition.onstart = function (event) {
+                setMicBadge('badge-error');
+            }
+
+            recognition.onaudiostart = function (event) {
+                setMicBadge('badge-warning');
+            }
+
+            recognition.onsoundstart = function (event) {
+                setMicBadge('badge-primary');
+            }
+
+            recognition.onspeechstart = function (event) {
+                setMicBadge('badge-success');
             }
 
             recognition.onresult = function (event) {
@@ -72,7 +170,7 @@
 
                 for (var i = event.resultIndex; i < event.results.length; i++) {
                     if (event.results[i].isFinal) {
-                        final_str += ' ' + event.results[i][0].transcript;
+                        final_str += event.results[i][0].transcript;
                     } else {
                         interim += event.results[i][0].transcript;
                     }
@@ -81,21 +179,58 @@
                 updateCaption(final_str, interim)
             };
 
-            recognition.onerror = function (event) {
-                console.log('Error occurred in recognition: ' + event.error);
+            recognition.onspeachend = function (event) {
+                setMicBadge('badge-primary');
             }
 
-            MIC_ON_DOM.addEventListener('click', function () {
-                is_mic_on = true;
-                recognition.start();
-            });
+            recognition.onsoundend = function (event) {
+                setMicBadge('badge-warning');
+            }
 
-            MIC_OFF_DOM.addEventListener('click', function () {
-                is_mic_on = false;
-                recognition.stop();
+            recognition.onaudioend = function (event) {
+                setMicBadge('badge-warning');
+            }
+
+            recognition.onend = function (event) {
+                if (is_mic_on) {
+                    setMicBadge('badge-error');
+                    recognition.start();
+                } else {
+                    setMicBadge('badge-red');
+                }
+            }
+
+            MIC_TOGGLE_DOM.addEventListener('click', function () {
+                toggleMic();
             });
         }
 
+        function toggleMic() {
+            if (is_mic_on) {
+                is_mic_on = false;
+                MIC_TOGGLE_DOM.textContent = '인식 시작';
+                MIC_TOGGLE_DOM.classList.remove('btn-error');
+                MIC_TOGGLE_DOM.classList.add('btn-success');
+                MIC_TOGGLE_DOM.classList.remove('badge');
+                recognition.abort();
+            } else {
+                is_mic_on = true;
+                MIC_TOGGLE_DOM.textContent = '인식 종료';
+                MIC_TOGGLE_DOM.classList.remove('btn-success');
+                MIC_TOGGLE_DOM.classList.add('btn-error');
+                MIC_TOGGLE_DOM.classList.add('badge');
+                recognition.start();
+            }
+        }
+
+        function setMicBadge(badge_type) {
+            MIC_TOGGLE_DOM.classList.remove('badge-primary');
+            MIC_TOGGLE_DOM.classList.remove('badge-success');
+            MIC_TOGGLE_DOM.classList.remove('badge-warning');
+            MIC_TOGGLE_DOM.classList.remove('badge-error');
+            MIC_TOGGLE_DOM.classList.remove('badge-red');
+            MIC_TOGGLE_DOM.classList.add(badge_type);
+        }
 
         function listenSocket() {
             socket = io("https://cc-overlay.update.sh/recognition", {
