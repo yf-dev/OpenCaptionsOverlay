@@ -1,7 +1,9 @@
 .idea/
 .vscode/
 settings.env
+settings.dev.env
 docker-compose.yml
+docker-compose.dev.yml
 
 __pycache__
 *.py[co]
@@ -10,4 +12,3 @@ backend/log
 backend/flask/.venv
 
 db-data/
-redis-data/

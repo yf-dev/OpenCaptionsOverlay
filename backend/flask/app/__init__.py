@@ -48,3 +48,7 @@ def recognition():
 def overlay():
     return render_template("overlay.html")
 
+@app.route("/overlay-sans")
+def overlay_sans():
+    return render_template("overlay-sans.html")
+

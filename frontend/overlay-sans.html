@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 
 <head>
-    <title>Closed Captions Overlay - Overlay</title>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Jua:400">
+    <title>Closed Captions Overlay - Overlay(Sans)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css?family=Jua:400');
-
         :root {
-            --accent-color: #95BBDF;
-            --profile-url: url("{{ url_for('static', filename='profile.png') }}");
+            --profile-url: url("{{ url_for('static', filename='sans.png') }}");
         }
 
         body {
             overflow: hidden;
+            background: #000;
         }
 
         .root-container {
-            font-family: "Jua", sans-serif;
-            font-size: 20px;
+            font-family: gulim;
+            font-weight: bold;
+            font-smooth: never;
+            font-size: 40px;
             position: absolute;
             bottom: 0;
             width: 100%;
@@ -34,7 +33,6 @@
             left: 3.2em;
             right: 1.5em;
             position: absolute;
-            text-align: center;
             opacity: 1;
             transition: opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         }
@@ -44,9 +42,8 @@
         }
 
         .cc-content {
-            background: rgba(255, 255, 255, 0.7);
-            border: 0.12em solid var(--accent-color);
-            border-radius: 1.3em;
+            background: #000000;
+            border: 0.12em solid #ffffff;
             padding: 0.5em 0.8em;
             max-height: 4.1em;
             display: inline-block;
@@ -54,50 +51,47 @@
         }
 
         .text-transition-wrapper {
-            height: 0;
-            width: 0;
+            height: 3.5em;
+            width: 16em;
             overflow: hidden;
+            display: inline-block;
             transition: height 0.15s cubic-bezier(0.075, 0.82, 0.165, 1), width 0.15s cubic-bezier(0.075, 0.82, 0.165, 1);
         }
 
         .text-transition {
             position: absolute;
+            width: 15em;
         }
 
         .text-wrapper {
             display: flex;
             flex-direction: column-reverse;
-            max-height: 4.1em;
+            max-height: 3.5em;
             overflow: hidden;
-        }
-
-        .text {
-            align-self: flex-end;
         }
 
         .text p {
             margin: 0;
-            color: #000000;
+            color: #ffffff;
             word-break: keep-all;
             word-wrap: break-word;
+            padding-left: 4.5em;
+            text-indent: -0.8em;
         }
 
         #interim {
-            color: #333333;
+            color: #dddddd;
         }
 
         .profile {
+            display: inline-block;
             position: absolute;
-            margin-left: -4em;
-            bottom: 0.4em;
+            top: 1em;
         }
 
         .profile .profile-bg {
-            height: 2.3em;
-            width: 2.3em;
-            border-radius: 2.3em;
-            background-color: var(--accent-color);
-            border: 0.12em solid var(--accent-color);
+            height: 2.7em;
+            width: 2.7em;
             overflow: hidden;
         }
 
@@ -159,26 +153,6 @@
             el.addEventListener('oTransitionEnd', callback, false);
         }
 
-        function getHeight(el) {
-            return parseFloat(getComputedStyle(el, null).height.replace("px", ""))
-        }
-
-        function getWidth(el) {
-            return parseFloat(getComputedStyle(el, null).width.replace("px", ""))
-        }
-
-        function setHeight(el, val) {
-            if (typeof val === "function") val = val();
-            if (typeof val === "string") el.style.height = val;
-            else el.style.height = val + "px";
-        }
-
-        function setWidth(el, val) {
-            if (typeof val === "function") val = val();
-            if (typeof val === "string") el.style.width = val;
-            else el.style.width = val + "px";
-        }
-
         function listenSocket() {
             const url_params = new URLSearchParams(window.location.search);
             const channel_id = url_params.get('channel');
@@ -209,19 +183,18 @@
             } else {
                 updateInterim(interim);
             }
-            updateTextTransitionGroup();
         }
 
         function updateFinalStr(final_str) {
             last_final_str = final_str;
-            FINAL_STR_DOM.textContent = final_str;
+            FINAL_STR_DOM.textContent = final_str ? ('* ' + final_str) : final_str;
             showFinalStr();
             setTextTimeoutTimer();
         }
 
         function updateInterim(interim) {
             last_interim = interim;
-            INTERIM_DOM.textContent = interim;
+            INTERIM_DOM.textContent = interim ? ('* ' + interim) : interim;
             showInterim();
         }
 
@@ -242,14 +215,6 @@
             } else {
                 hideContainer();
             }
-            updateTextTransitionGroup();
-        }
-
-        function updateTextTransitionGroup() {
-            const height = getHeight(TEXT_TRANSITION_DOM);
-            const width = getWidth(TEXT_TRANSITION_DOM);
-            setHeight(TEXT_TRANSITION_WRAPPER_DOM, height);
-            setWidth(TEXT_TRANSITION_WRAPPER_DOM, width);
         }
 
         function isFinalStrShowing() {
@@ -306,7 +271,6 @@
         addTransitionEndEventListener(CC_CONTAINER_DOM, function (event) {
             if (!isContainerShowing()) {
                 hideFinalStr();
-                updateTextTransitionGroup();
             }
         });
     </script>

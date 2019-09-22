@@ -15,6 +15,10 @@
             background: #454d5d;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         .container {
             max-width: 980px;
             margin-top: 24px;
@@ -38,6 +42,16 @@
 
         .mic-buttons .btn {
             margin-right: 8px;
+        }
+
+        .mic-buttons .form-switch {
+            display: inline;
+        }
+
+        #sansVolume {
+            display: inline;
+            width: 100px;
+            padding-top: 0.6rem;
         }
 
         #micToggle.badge-primary:after {
@@ -92,8 +106,11 @@
                 <div class="card link-card">
                     <div class="card-body">
                         <div class="links">
-                            <div>오버레이 주소: <a target="_blank"
+                            <div>오버레이 주소:
+                                <a id="overlayNormal" target="_blank"
                                     href="{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}">{{ url_for('overlay', _external=True) }}?channel={{ current_user.twitch_id }}</a>
+                                <a id="overlaySans" class="hidden" target="_blank"
+                                    href="{{ url_for('overlay_sans', _external=True) }}?channel={{ current_user.twitch_id }}">{{ url_for('overlay_sans', _external=True) }}?channel={{ current_user.twitch_id }}</a>
                             </div>
                         </div>
                     </div>
@@ -105,6 +122,11 @@
                         <div class="mic-buttons">
                             <button id="micToggle" class="btn btn-success" data-badge="&nbsp;">인식 시작</button>
                             <a class="btn" href="{{ url_for('logout') }}">로그인 정보 갱신</a>
+                            <label class="form-switch">
+                                <input type="checkbox" id="sansModeToggle">
+                                <i class="form-icon"></i> WA!
+                            </label>
+                            <input id="sansVolume" class="slider hidden" type="range" min="0" max="100" value="100">
                         </div>
                     </div>
                 </div>
@@ -127,19 +149,27 @@
     <script>
         const LANG = 'ko-KR';
 
+        const OVERLAY_NORMAL_DOM = document.getElementById('overlayNormal');
+        const OVERLAY_SANS_DOM = document.getElementById('overlaySans');
+
         const MIC_TOGGLE_DOM = document.getElementById('micToggle');
+        const SANS_MODE_TOGGLE_DOM = document.getElementById('sansModeToggle');
+        const SANS_VOLUME_DOM = document.getElementById('sansVolume');
 
         const FINAL_STR_DOM = document.getElementById('finalStr');
         const INTERIM_DOM = document.getElementById('interim');
 
-        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
-        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
-        var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+        var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
 
         var socket = null;
         var recognition = null;
-        var is_mic_on = false;
 
+        var last_interim = '';
+
+        var is_mic_on = false;
+        var is_sans_mode = false;
 
         function initRecognition() {
             recognition = new SpeechRecognition();
@@ -203,6 +233,9 @@
             MIC_TOGGLE_DOM.addEventListener('click', function () {
                 toggleMic();
             });
+            SANS_MODE_TOGGLE_DOM.addEventListener('change', function (e) {
+                setSansMode(SANS_MODE_TOGGLE_DOM.checked);
+            })
         }
 
         function toggleMic() {
@@ -221,6 +254,48 @@
                 MIC_TOGGLE_DOM.classList.add('badge');
                 recognition.start();
             }
+        }
+
+        function setSansMode(sans_mode) {
+            is_sans_mode = sans_mode;
+            if (is_sans_mode) {
+                SANS_VOLUME_DOM.classList.remove('hidden');
+                OVERLAY_NORMAL_DOM.classList.add('hidden');
+                OVERLAY_SANS_DOM.classList.remove('hidden');
+            } else {
+                SANS_VOLUME_DOM.classList.add('hidden');
+                OVERLAY_NORMAL_DOM.classList.remove('hidden');
+                OVERLAY_SANS_DOM.classList.add('hidden');
+            }
+        }
+
+        const SANS_QUEUE = [];
+        const SANS_SPEED = 80;
+        var is_sans_playing = false;
+        function enqueueSans(length) {
+            SANS_QUEUE.push(length);
+            if (!is_sans_playing) {
+                playSans();
+            }
+        }
+        function playSans() {
+            if (SANS_QUEUE.length == 0) {
+                is_sans_playing = false;
+                return;
+            }
+            var length_raw = SANS_QUEUE.shift();
+            is_sans_playing = true;
+
+            var length = Math.ceil(length_raw * 0.8);
+
+            for (var i = 0; i < length; i++) {
+                setTimeout(function () {
+                    var sans_voice = new Audio("{{ url_for('static', filename='voice_sans.mp3') }}")
+                    sans_voice.volume = SANS_VOLUME_DOM.value / 100;
+                    sans_voice.play();
+                }, i * SANS_SPEED);
+            }
+            setTimeout(playSans, (length + 1) * SANS_SPEED);
         }
 
         function setMicBadge(badge_type) {
@@ -254,8 +329,19 @@
                 'interim': interim
             });
 
+
+            if (is_sans_mode) {
+                var diff = interim.length - last_interim.length;
+                if (diff > 0) {
+                    enqueueSans(diff);
+                }
+            }
+
+
             FINAL_STR_DOM.textContent = final_str;
             INTERIM_DOM.textContent = interim;
+
+            last_interim = interim;
         }
 
         listenSocket();
