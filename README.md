@@ -1,8 +1,8 @@
-# Closed Captions Overlay
+# Open Captions Overlay
 
 ![Sample](./sample.gif)
 
-Closed Captions Overlay는 자막을 방송 송출 프로그램(OBS, XSplit 등)에 표시하기 위한 서비스입니다.
+Open Captions Overlay는 자막을 방송 송출 프로그램(OBS, XSplit 등)에 표시하기 위한 서비스입니다.
 
 이 서비스을 사용하면 마이크를 통해 말한 내용을 방송 화면에 실시간으로 자막처럼 표시할 수 있습니다.
 
@@ -39,13 +39,11 @@ Closed Captions Overlay는 자막을 방송 송출 프로그램(OBS, XSplit 등)
 
 만약 사용을 종료하시려면 음성 인식 사이트의 `인식 종료` 버튼을 클릭하거나 창을 종료합니다.
 
-트위치에서 자막을 지원하는 방송을 진행하신다면, 방송 태그에 [자막(Closed captions)](https://www.twitch.tv/directory/all/tags/8a01ea18-df97-4046-9cff-a9a822bb96e5)을 추가하시는 것도 추천드립니다.
-
 ## 커스터마이징
 
 ### 1. 오버레이에 표시되는 프로필 이미지 변경
 
-방송 송출 프로그램에서 Closed Captions Overlay 브라우저 소스의 CSS에 다음 내용을 추가합니다.
+방송 송출 프로그램에서 Open Captions Overlay 브라우저 소스의 CSS에 다음 내용을 추가합니다.
 
 ```css
 :root {
@@ -59,7 +57,7 @@ Closed Captions Overlay는 자막을 방송 송출 프로그램(OBS, XSplit 등)
 
 ### 2. 오버레이에 표시되는 강조 색상 변경
 
-방송 송출 프로그램에서 Closed Captions Overlay 브라우저 소스의 CSS에 다음 내용을 추가합니다.
+방송 송출 프로그램에서 Open Captions Overlay 브라우저 소스의 CSS에 다음 내용을 추가합니다.
 
 ```css
 :root {
