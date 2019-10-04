@@ -72,7 +72,9 @@ Open Captions Overlay는 자막을 방송 송출 프로그램(OBS, XSplit 등)�
 
 ```css
 body {
-    background: transparent;
+    background-color: rgba(0, 0, 0, 0);
+    margin: 0px auto;
+    overflow: hidden;
 }
 ```
 
