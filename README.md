@@ -67,6 +67,17 @@ Open Captions Overlay는 자막을 방송 송출 프로그램(OBS, XSplit 등)�
 
 여기서 `#95BBDF` 값을 변경할 강조 색상 코드로 변경해주세요.
 
+### 3. 오버레이의 바탕이 투명하지 않은 경우
+방송 송출 프로그램에서 Open Captions Overlay 브라우저 소스의 CSS에 다음 내용을 추가합니다.
+
+```css
+body {
+    background-color: rgba(0, 0, 0, 0);
+    margin: 0px auto;
+    overflow: hidden;
+}
+```
+
 ## Development
 
 이하의 내용은 일반 사용자가 아닌 개발자를 위한 내용입니다.
