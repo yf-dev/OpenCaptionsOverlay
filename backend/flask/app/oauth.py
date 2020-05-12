@@ -6,13 +6,24 @@ from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from sqlalchemy.orm.exc import NoResultFound
 
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
+from oauthlib.oauth2.rfc6749.clients.web_application import WebApplicationClient
 
 from . import app, db, login_manager
 from .models import User, OAuth
 
+class TwitchWebClient(WebApplicationClient):
+    def _add_bearer_token(
+        self, uri, http_method="GET", body=None, headers=None, token_placement=None
+    ):
+        uri, headers, body = super()._add_bearer_token(uri, http_method, body, headers, token_placement)
+        headers = headers or {}
+        headers["Client-ID"] = self.client_id
+        return uri, headers, body
+
 twitch_blueprint = OAuth2ConsumerBlueprint(
     "twitch",
     __name__,
+    client=TwitchWebClient(app.config.get("TWITCH_CLIENT_ID")),
     client_id=app.config.get("TWITCH_CLIENT_ID"),
     client_secret=app.config.get("TWITCH_CLIENT_SECRET"),
     base_url="https://api.twitch.tv/helix/",
@@ -66,9 +77,10 @@ def twitch_logged_in(blueprint, token):
     return False
 
 @oauth_error.connect_via(twitch_blueprint)
-def twitch_error(blueprint, message, response):
-    msg = ("OAuth error from {name}! " "message={message} response={response}").format(
-        name=blueprint.name, message=message, response=response
+def twitch_error(blueprint, error, error_description=None, error_uri=None):
+    print('twitch_error')
+    msg = ("OAuth error from {name}! " "error_description={error_description} error_uri={error_uri}").format(
+        name=blueprint.name, error_description=error_description, error_uri=error_uri
     )
     flash(msg, category="error")
 
