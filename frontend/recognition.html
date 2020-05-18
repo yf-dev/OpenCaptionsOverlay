@@ -199,16 +199,20 @@
             recognition.onresult = function (event) {
                 var interim = '';
                 var final_str = '';
+                var confidence = 0;
+                var final_count = 0;
 
                 for (var i = event.resultIndex; i < event.results.length; i++) {
                     if (event.results[i].isFinal) {
                         final_str += event.results[i][0].transcript;
+                        confidence += event.results[i][0].confidence;
+                        final_count += 1;
                     } else {
                         interim += event.results[i][0].transcript;
                     }
                 }
 
-                updateCaption(final_str, interim)
+                updateCaption(final_str.trim(), interim.trim(), confidence);
             };
 
             recognition.onspeachend = function (event) {
@@ -322,13 +326,14 @@
         }
 
 
-        function updateCaption(final_str, interim) {
+        function updateCaption(final_str, interim, confidence) {
             if (socket === null || socket.disconnected) {
                 return;
             }
             socket.send({
                 'final_str': final_str,
-                'interim': interim
+                'interim': interim,
+                'confidence': confidence
             });
 
 
