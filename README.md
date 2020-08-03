@@ -1,3 +1,11 @@
+<h2>:warning: 서비스 장애 안내 :warning:</h2>
+
+현재 태풍 피해로 인해 음성 인식 사이트에 접속할 수 없는 문제가 있습니다.
+
+해당 문제에 대한 자세한 정보는 [#8 cc-overlay.update.sh에 접속할 수 없음](https://github.com/yf-dev/OpenCaptionsOverlay/issues/8)을 참고해주세요.
+
+---
+
 # Open Captions Overlay
 
 ![Sample](./sample.gif)
