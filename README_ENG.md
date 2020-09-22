@@ -27,12 +27,12 @@ If what you said on your microphone is successfully printed, you have completed 
 
 #### 3.1. OBS Studio
 
-1. Register the'overlay address' displayed in [Voice Recognition Site](https://cc-overlay.update.sh/recognition) as the browser source URL of OBS Studio.
+1. Register the 'overlay address' displayed in [Voice Recognition Site](https://cc-overlay.update.sh/recognition) as the browser source URL of OBS Studio.
 2. When your canvas size is `1280x720`, the recommended browser size is `840x210`.
 
 #### 3.1. XSplit Broadcaster
 
-1. Register the'overlay address' displayed in [Voice Recognition Site](https://cc-overlay.update.sh/recognition) in the URL field of the Add Web Page Source window.
+1. Register the 'overlay address' displayed in [Voice Recognition Site](https://cc-overlay.update.sh/recognition) in the URL field of the Add Web Page Source window.
 2. When your canvas size is `1280x720`, the recommended browser size is `840x210`.
 
 ### 4. Finish settings
