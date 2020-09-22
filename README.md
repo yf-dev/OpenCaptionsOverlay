@@ -1,8 +1,8 @@
+[English](README_ENG.md)
+
 # Open Captions Overlay
 
 ![Sample](./sample.gif)
-
-[English](README_ENG.md)
 
 `Open Captions Overlay`는 자막을 방송 송출 프로그램(`OBS`, `XSplit` 등)에 표시하기 위한 서비스입니다.
 

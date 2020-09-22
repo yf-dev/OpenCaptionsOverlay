@@ -1,8 +1,8 @@
+[한국어](https://github.com/yf-dev/OpenCaptionsOverlay)
+
 # Open Captions Overlay
 
 ![Sample](./sample.gif)
-
-[한국어](https://github.com/yf-dev/OpenCaptionsOverlay)
 
 `Open Captions Overlay` is a service to display subtitles on broadcast programs such as `OBS` and `XSplit`.
 
