@@ -2,6 +2,8 @@
 
 ![Sample](./sample.gif)
 
+[한국어](https://github.com/yf-dev/OpenCaptionsOverlay)
+
 `Open Captions Overlay` is a service to display subtitles on broadcast programs such as `OBS` and `XSplit`.
 
 If you use this service, the voice spoken through the microphone can be displayed as subtitles in real time on the broadcast screen.

@@ -2,6 +2,8 @@
 
 ![Sample](./sample.gif)
 
+[English](README_ENG.md)
+
 `Open Captions Overlay`는 자막을 방송 송출 프로그램(`OBS`, `XSplit` 등)에 표시하기 위한 서비스입니다.
 
 이 서비스을 사용하면 마이크를 통해 말한 내용을 방송 화면에 실시간으로 자막처럼 표시할 수 있습니다.
