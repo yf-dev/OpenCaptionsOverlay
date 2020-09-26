@@ -16,7 +16,7 @@ This project was inspired by [Closed Captions for Streams](https://www.twitch.tv
 
 ### 1. Setting the speech recognition
 
-1. Access [Voice Recognition Site] (https://cc-overlay.update.sh/recognition) using __"latest version of Chrome"__.
+1. Access [Voice Recognition Site](https://cc-overlay.update.sh/recognition) using __"latest version of Chrome"__.
 2. Log in to the `Voice Recognition Site` with the Twitch account you want to broadcast.
 3. Click the `Start Recognition` button and allow the microphone permission.
 4. Make sure that what you say on the microphone is printed out.
