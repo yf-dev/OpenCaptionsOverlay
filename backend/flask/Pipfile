@@ -11,7 +11,7 @@ Flask-Script = "==2.0.6"
 Flask-SocketIO = "==4.2.1"
 Flask-Login = "==0.4.1"
 psycopg2 = "==2.8.3"
-eventlet = "==0.25.1"
+eventlet = "==0.31.0"
 gunicorn = "==19.9.0"
 blinker = "==1.4"
 
