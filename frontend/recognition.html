@@ -314,7 +314,7 @@
         }
 
         function listenSocket() {
-            socket = io("https://cc-overlay.update.sh/recognition", {
+            socket = io("/recognition", {
                 transports: ['websocket']
             });
             socket.on('reconnect_attempt', function () {

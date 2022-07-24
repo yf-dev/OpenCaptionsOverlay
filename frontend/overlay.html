@@ -190,7 +190,7 @@
                 return;
             }
 
-            socket = io("https://cc-overlay.update.sh/overlay/" + channel_id, {
+            socket = io("/overlay/" + channel_id, {
                 transports: ['websocket']
             });
             socket.on('reconnect_attempt', function () {
